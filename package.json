@@ -1,0 +1,12 @@
+{
+  "name": "ai-gap-analyzer",
+  "version": "2.0.0",
+  "description": "Multi-role NLP competency diagnostic (student + admin) — 100% client-side, deployable on GitHub Pages.",
+  "scripts": {
+    "test": "node test_engine.js && node test_store.js && node test_app.js"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  },
+  "license": "MIT"
+}

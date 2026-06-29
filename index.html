@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Gap Analyzer · NLP Competency Diagnostic</title>
+  <meta name="description" content="Chatbot-based NLP competency diagnostic with student and admin roles." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">GA</div>
+        <div>
+          <div class="eyebrow">NLP Lab · Project 2</div>
+          <h1>AI Gap Analyzer</h1>
+        </div>
+      </div>
+      <div id="userbox" class="userbox hidden">
+        <div class="who">
+          <span id="ub-name" class="ub-name"></span>
+          <span id="ub-role" class="rolebadge"></span>
+        </div>
+        <button class="btn ghost sm" id="btn-logout">Log out</button>
+      </div>
+    </header>
+
+    <!-- ROLE NAV -->
+    <nav id="mainnav" class="mainnav hidden"></nav>
+
+    <!-- VIEW: AUTH -->
+    <section id="view-auth">
+      <div class="auth">
+        <div class="auth-card">
+          <div class="kicker">Diagnose · Detect · Recommend</div>
+          <h2>Sign in to your <span class="grad">NLP diagnostic</span></h2>
+          <p class="auth-sub">Students take the diagnostic and review their gaps. Admins manage content, the rubric, answer keys, and see every student's history.</p>
+          <div class="seg">
+            <button class="seg-btn active" id="seg-login">Log in</button>
+            <button class="seg-btn" id="seg-register">Register</button>
+          </div>
+          <div id="pane-login" class="auth-pane">
+            <label class="fld"><span>Username</span><input id="li-user" type="text" autocomplete="username" placeholder="admin / demo" /></label>
+            <label class="fld"><span>Password</span><input id="li-pass" type="password" autocomplete="current-password" placeholder="********" /></label>
+            <div id="li-err" class="formerr"></div>
+            <button class="btn block" id="btn-login">Log in</button>
+            <div class="hint-creds">Demo accounts: <b>admin / admin123</b> &nbsp;|&nbsp; <b>demo / demo123</b></div>
+          </div>
+          <div id="pane-register" class="auth-pane hidden">
+            <label class="fld"><span>Username</span><input id="rg-user" type="text" autocomplete="username" placeholder="choose a username" /></label>
+            <label class="fld"><span>Password</span><input id="rg-pass" type="password" autocomplete="new-password" placeholder="at least 4 characters" /></label>
+            <div id="rg-err" class="formerr"></div>
+            <button class="btn block" id="btn-register">Create student account</button>
+            <div class="hint-creds">New accounts are created as <b>students</b>. Ask an admin to promote you.</div>
+          </div>
+        </div>
+        <div class="auth-side">
+          <div class="pipeline-strip vert" aria-label="NLP pipeline backbone">
+            <span class="stage"><span>1</span> Data</span>
+            <span class="stage"><span>2</span> Preprocessing</span>
+            <span class="stage"><span>3</span> Representation</span>
+            <span class="stage"><span>4</span> Model / Reasoning</span>
+            <span class="stage"><span>5</span> User Output</span>
+          </div>
+          <p class="side-note">A real client-side NLP pipeline scores every answer: tokenize - remove stopwords - stem - TF-IDF - cosine similarity. No server, no API key.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: WELCOME (user) -->
+    <section id="view-welcome" class="hidden">
+      <div class="hero">
+        <div class="kicker">Student workspace</div>
+        <h2>Find your NLP <span class="grad">competency gaps</span> in one conversation.</h2>
+        <p>This assistant interviews you across the NLP concepts your instructor configured, runs a real NLP pipeline on every answer, then shows what you've <b>mastered</b>, what's <b>developing</b>, and where the <b>gaps</b> are - plus exactly where you went wrong and how you're scored against the grading rubric.</p>
+        <div class="meta">
+          <div><b id="w-concepts">8</b> NLP concepts probed</div>
+          <div><b>100%</b> runs in your browser</div>
+          <div><b id="w-attempts">0</b> attempts so far</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="btn-start">Start diagnostic</button>
+          <button class="btn ghost" id="btn-view-rubric">View grading rubric</button>
+          <button class="btn ghost" id="btn-view-history">My history</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: DIAGNOSTIC -->
+    <section id="view-diagnostic" class="hidden">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-head"><div><h3>Student - AI Conversation</h3></div><div class="sub" id="qcounter">Q 0 / 0</div></div>
+          <div class="panel-body">
+            <div class="progress"><div class="bar"><i id="progbar"></i></div><div class="label" id="proglabel">0%</div></div>
+            <div class="chat" id="chat" aria-live="polite"></div>
+            <div class="composer">
+              <textarea id="answer" placeholder="Explain in your own words... (the engine scores concept coverage + wording similarity)"></textarea>
+              <div class="row">
+                <span class="hint">Press <b>Ctrl/Cmd + Enter</b> to submit</span>
+                <div class="btn-row">
+                  <button class="btn ghost" id="btn-skip">Skip</button>
+                  <button class="btn" id="btn-submit">Submit answer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid; gap:18px;">
+          <div class="panel">
+            <div class="panel-head"><h3>NLP Pipeline Inspector</h3><div class="sub">live</div></div>
+            <div class="panel-body" id="inspector"><div class="insp-empty">Submit an answer to watch it flow through the pipeline: tokenize - remove stopwords - stem - TF-IDF - cosine match.</div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Competency Map</h3><div class="sub">updates live</div></div>
+            <div class="panel-body">
+              <div class="cmap" id="cmap"></div>
+              <div class="legend">
+                <span><i style="background:var(--green)"></i> Mastered</span>
+                <span><i style="background:var(--amber)"></i> Developing</span>
+                <span><i style="background:var(--pink)"></i> Gap</span>
+                <span><i style="background:var(--ink-dim)"></i> Untested</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: RESULTS -->
+    <section id="view-results" class="hidden">
+      <div class="results">
+        <div class="panel">
+          <div class="panel-head"><h3>Diagnostic Summary</h3><div class="sub" id="overall-band">-</div></div>
+          <div class="panel-body">
+            <div class="summary-grid">
+              <div class="stat cyan"><b id="s-overall">0%</b><span>Overall mastery</span></div>
+              <div class="stat green"><b id="s-mastered">0</b><span>Mastered</span></div>
+              <div class="stat amber"><b id="s-developing">0</b><span>Developing</span></div>
+              <div class="stat pink"><b id="s-gap">0</b><span>Gaps found</span></div>
+            </div>
+            <div id="progress-note" class="prog-note"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>How you score against the rubric</h3><div class="sub">grade match</div></div>
+          <div class="panel-body"><div id="rubric-match"></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Review - where you went wrong</h3><div class="sub">per question</div></div>
+          <div class="panel-body"><div id="review"></div></div>
+        </div>
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-head"><h3>Personalized Learning Pathway</h3><div class="sub">next best actions</div></div>
+            <div class="panel-body"><div class="pathway" id="pathway"></div></div>
+          </div>
+          <div style="display:grid; gap:18px;">
+            <div class="panel">
+              <div class="panel-head"><h3>Competency Map</h3><div class="sub">final</div></div>
+              <div class="panel-body"><div class="cmap" id="cmap-final"></div></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h3>Evidence Log</h3><div class="sub">for your UAS demo</div></div>
+              <div class="panel-body"><div class="logbox" id="logbox"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="btn-row">
+              <button class="btn" id="btn-export">Export evidence report (.txt)</button>
+              <button class="btn ghost" id="btn-retake">Re-take (feedback loop)</button>
+              <button class="btn ghost" id="btn-home">Home</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: HISTORY (user) -->
+    <section id="view-history" class="hidden">
+      <div class="panel">
+        <div class="panel-head"><h3>My attempt history</h3><div class="sub">feedback loop</div></div>
+        <div class="panel-body"><div id="user-history"></div></div>
+      </div>
+    </section>
+
+    <!-- VIEW: RUBRIC (read-only) -->
+    <section id="view-rubric" class="hidden">
+      <div class="panel">
+        <div class="panel-head"><h3>Grading rubric</h3><div class="sub">how you're assessed</div></div>
+        <div class="panel-body"><div id="rubric-view"></div></div>
+      </div>
+    </section>
+
+    <!-- VIEW: ADMIN -->
+    <section id="view-admin" class="hidden">
+      <div class="admin-tabs">
+        <button class="tab active" data-tab="content">Content &amp; answer keys</button>
+        <button class="tab" data-tab="rubric">Rubric</button>
+        <button class="tab" data-tab="users">Users</button>
+        <button class="tab" data-tab="history">All history</button>
+        <button class="tab" data-tab="danger">Reset</button>
+      </div>
+      <div id="admin-content" class="admin-pane"></div>
+      <div id="admin-rubric" class="admin-pane hidden"></div>
+      <div id="admin-users" class="admin-pane hidden"></div>
+      <div id="admin-history" class="admin-pane hidden"></div>
+      <div id="admin-danger" class="admin-pane hidden"></div>
+    </section>
+
+    <footer class="foot">
+      <div>AI Gap Analyzer · Basic NLP for Engineering Students</div>
+      <div class="tags"><span>LEARN</span><span>INNOVATE</span><span>ENGINEER</span><span>TRANSFORM</span></div>
+    </footer>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/nlp.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/diagnostic.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
